@@ -8,6 +8,7 @@ from django.contrib.auth.models import AbstractUser, User
 # Create your models here.
 
 class Profile(AbstractUser):
+    """ User detail or registration data table"""
     mobile_number = models.IntegerField(default=123)
     address = models.CharField(max_length=250)
     email = models.EmailField(max_length=150)
@@ -17,6 +18,7 @@ class Profile(AbstractUser):
 
 
 class Hotel(models.Model):
+    """hotel database table"""
     name = models.CharField(max_length=200)
     contact = models.CharField(max_length=10)
     address = models.TextField(max_length=200)
@@ -29,6 +31,7 @@ class Hotel(models.Model):
 
 
 class HotelRoomType(models.Model):
+    """hotel room type data table """
     ROOMS_TYPE = (
         (1, 'single'),
         (2, 'double'),
@@ -51,6 +54,7 @@ class HotelRoomType(models.Model):
 
 
 class Reservation(models.Model):
+    """user reservation table"""
     PAYMENT_METHOD = (
         (1, 'CASH'),
         (2, 'NET BANKING'),
@@ -85,6 +89,7 @@ class Reservation(models.Model):
 
 @receiver(post_save, sender=Reservation)
 def Room_available(sender, instance, created, **kwargs):
+    """signal for room is available or not"""
     room = instance.room
     if created:
         room.is_available = False

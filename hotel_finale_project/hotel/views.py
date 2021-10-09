@@ -1,11 +1,11 @@
-from django.shortcuts import render
 from .models import Profile, Hotel, HotelRoomType, Reservation
 from .serializers import UserSerializer, HotelSerializer, HotelRoomTypeSerializer, HotelReservation
 from rest_framework import viewsets, permissions
-from .permissions import IsHeadOrReadOnly, IsStaff
+from .permissions import IsStaff
 
 
 class UserView(viewsets.ModelViewSet):
+    """ user view and CRUD operation for userdata and also permissions for different user"""
     queryset = Profile.objects.all()
     serializer_class = UserSerializer
 
@@ -14,6 +14,8 @@ class UserView(viewsets.ModelViewSet):
 
 
 class HotelView(viewsets.ModelViewSet):
+    """ hotel view and CRUD operation for hotel data and also permissions for different user"""
+
     queryset = Hotel.objects.all()
     serializer_class = HotelSerializer
 
@@ -21,7 +23,9 @@ class HotelView(viewsets.ModelViewSet):
         return (permissions.AllowAny() if self.request.method == 'GET' else IsStaff()),
 
 
-class HotelRoomsAvailable(viewsets.ModelViewSet):
+class HotelRoomsTypeAvailable(viewsets.ModelViewSet):
+    """ hotel room type where check room is available or not if not create room or update room"""
+
     queryset = HotelRoomType.objects.all()
     serializer_class = HotelRoomTypeSerializer
 
@@ -30,6 +34,7 @@ class HotelRoomsAvailable(viewsets.ModelViewSet):
 
 
 class ReservationHotel(viewsets.ModelViewSet):
+    """ reservation for user and select payment and also check out from the hotel"""
     queryset = Reservation.objects.all()
     serializer_class = HotelReservation
 
