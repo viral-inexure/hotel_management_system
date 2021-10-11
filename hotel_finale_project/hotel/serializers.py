@@ -1,29 +1,37 @@
 from rest_framework import serializers
 from django.contrib.auth.hashers import make_password
 from .models import Profile, Hotel, HotelRoomType, Reservation
+from ..constants import (USERNAME, MOBILE_NUMBER, ADDRESS, EMAIL, PASSWORD,
+                         IS_SUPERUSER, IS_STAFF, REQUIRED,
+                         NAME, CONTACT, ZIP, CITY, COUNTRY,
+                         HOTEL, ROOM_NO, ROOM_TYPE, RATE, IS_AVAILABLE, PERSON_CAP,
+                         ROOM, NO_OF_GUESTS, CHECK_IN, CHARGE, CHECK_OUT_DONE,
+                         CHECK_OUT, PAYMENT_TYPE, PAYMENT_DATE
+                         )
 
 
 class UserSerializer(serializers.ModelSerializer):
     """user profile serializer nad validations """
+
     class Meta:
         model = Profile
-        fields = ['username', 'mobile_number', 'address', 'email',
-                  'password', 'is_superuser', 'is_staff'
+        fields = [USERNAME, MOBILE_NUMBER, ADDRESS, EMAIL,
+                  PASSWORD, IS_SUPERUSER, IS_STAFF
                   ]
         extra_kwargs = {
-            'username': {'required': True},
-            'mobile_number': {'required': True},
-            'address': {'required': True},
-            'password': {'required': True},
-            'email': {'required': True},
+            USERNAME: {REQUIRED: True},
+            MOBILE_NUMBER: {REQUIRED: True},
+            ADDRESS: {REQUIRED: True},
+            PASSWORD: {REQUIRED: True},
+            EMAIL: {REQUIRED: True},
         }
 
     def create(self, validated_data):
         user_detail = {
-            'username': validated_data['username'],
-            'password': make_password(validated_data['password']),
-            'is_staff': validated_data['is_staff'],
-            'is_superuser': validated_data['is_superuser']
+            'username': validated_data[USERNAME],
+            'password': make_password(validated_data[PASSWORD]),
+            'is_staff': validated_data[IS_STAFF],
+            'is_superuser': validated_data[IS_SUPERUSER]
         }
         Profile.objects.create(**user_detail)
         return validated_data
@@ -31,32 +39,34 @@ class UserSerializer(serializers.ModelSerializer):
 
 class HotelSerializer(serializers.ModelSerializer):
     """hotel serializer"""
+
     class Meta:
         model = Hotel
-        fields = ['name', 'contact', 'address', 'zip', 'city', 'country']
+        fields = [NAME, CONTACT, ADDRESS, ZIP, CITY, COUNTRY]
         extra_kwargs = {
-            'name': {'required': True},
-            'contact': {'required': True},
-            'address': {'required': True},
-            'zip': {'required': True},
-            'city': {'required': True},
-            'country': {'required': True},
+            'name': {REQUIRED: True},
+            'contact': {REQUIRED: True},
+            'address': {REQUIRED: True},
+            'zip': {REQUIRED: True},
+            'city': {REQUIRED: True},
+            'country': {REQUIRED: True},
         }
 
 
 class HotelRoomTypeSerializer(serializers.ModelSerializer):
     """ hotel room type serializer"""
+
     class Meta:
         model = HotelRoomType
-        fields = ['hotel', 'room_no', 'room_type', 'rate', 'is_available', 'person_cap']
+        fields = [HOTEL, ROOM_NO, ROOM_TYPE, RATE, IS_AVAILABLE, PERSON_CAP]
 
         extra_kwargs = {
-            'hotel': {'required': True},
-            'room_no': {'required': True},
-            'room_type': {'required': True},
-            'rate': {'required': True},
-            'is_available': {'required': True},
-            'person_cap': {'required': True},
+            'hotel': {REQUIRED: True},
+            'room_no': {REQUIRED: True},
+            'room_type': {REQUIRED: True},
+            'rate': {REQUIRED: True},
+            'is_available': {REQUIRED: True},
+            'person_cap': {REQUIRED: True},
         }
 
 
@@ -68,14 +78,14 @@ class HotelReservation(serializers.ModelSerializer):
 
     class Meta:
         model = Reservation
-        fields = ['username', 'room', 'no_of_guests', 'hotel', 'check_in',
-                  'check_out_done', 'check_out', 'payment_type', 'payment_date',
-                  'charge']
+        fields = [USERNAME, ROOM, NO_OF_GUESTS, HOTEL, CHECK_IN,
+                  CHECK_OUT_DONE, CHECK_OUT, PAYMENT_TYPE, PAYMENT_DATE,
+                  CHARGE]
 
         extra_kwargs = {
-            'username': {'required': True},
-            'room': {'required': True},
-            'no_of_guests': {'required': True},
-            'hotel': {'required': True},
-            'check_in': {'required': True},
+            'username': {REQUIRED: True},
+            'room': {REQUIRED: True},
+            'no_of_guests': {REQUIRED: True},
+            'hotel': {REQUIRED: True},
+            'check_in': {REQUIRED: True},
         }

@@ -3,6 +3,10 @@ from django.dispatch import receiver
 from django.db.models.signals import post_save
 from django.db import models
 from django.contrib.auth.models import AbstractUser, User
+from constants import (
+    SINGLE, HALL, KING,
+    QUEEN, DOUBLE, HOTEL, ROOM_NO, CASH, CREDIT_DEBIT_CARD, CHECK, NET_BANKING
+)
 
 
 # Create your models here.
@@ -33,11 +37,11 @@ class Hotel(models.Model):
 class HotelRoomType(models.Model):
     """hotel room type data table """
     ROOMS_TYPE = (
-        (1, 'single'),
-        (2, 'double'),
-        (3, 'king'),
-        (4, 'queen'),
-        (5, 'hall')
+        (1, SINGLE),
+        (2, DOUBLE),
+        (3, KING),
+        (4, QUEEN),
+        (5, HALL)
     )
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
     room_no = models.IntegerField(null=True, blank=True)
@@ -47,7 +51,7 @@ class HotelRoomType(models.Model):
     person_cap = models.IntegerField(default=1)
 
     class Meta:
-        unique_together = ('hotel', 'room_no')
+        unique_together = (HOTEL, ROOM_NO)
 
     def __str__(self):
         return str(f'{self.hotel.name} of {self.room_no}')
@@ -56,10 +60,10 @@ class HotelRoomType(models.Model):
 class Reservation(models.Model):
     """user reservation table"""
     PAYMENT_METHOD = (
-        (1, 'CASH'),
-        (2, 'NET BANKING'),
-        (3, 'CHECK'),
-        (4, 'CREDIT/DEBIT CARD')
+        (1, CASH),
+        (2, NET_BANKING),
+        (3, CHECK),
+        (4, CREDIT_DEBIT_CARD)
     )
     room = models.ForeignKey(HotelRoomType, on_delete=models.CASCADE)
     username = models.ForeignKey(Profile, on_delete=models.CASCADE)
