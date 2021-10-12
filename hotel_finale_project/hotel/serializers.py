@@ -1,13 +1,13 @@
 from rest_framework import serializers
 from django.contrib.auth.hashers import make_password
 from .models import Profile, Hotel, HotelRoomType, Reservation
-from ..constants import (USERNAME, MOBILE_NUMBER, ADDRESS, EMAIL, PASSWORD,
-                         IS_SUPERUSER, IS_STAFF, REQUIRED,
-                         NAME, CONTACT, ZIP, CITY, COUNTRY,
-                         HOTEL, ROOM_NO, ROOM_TYPE, RATE, IS_AVAILABLE, PERSON_CAP,
-                         ROOM, NO_OF_GUESTS, CHECK_IN, CHARGE, CHECK_OUT_DONE,
-                         CHECK_OUT, PAYMENT_TYPE, PAYMENT_DATE
-                         )
+from constants import (USERNAME, MOBILE_NUMBER, ADDRESS, EMAIL, PASSWORD,
+                       IS_SUPERUSER, IS_STAFF, REQUIRED,
+                       NAME, CONTACT, ZIP, CITY, COUNTRY,
+                       HOTEL, ROOM_NO, ROOM_TYPE, RATE, IS_AVAILABLE, PERSON_CAP,
+                       ROOM, NO_OF_GUESTS, CHECK_IN, CHARGE, CHECK_OUT_DONE,
+                       CHECK_OUT, PAYMENT_TYPE, PAYMENT_DATE
+                       )
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -30,6 +30,7 @@ class UserSerializer(serializers.ModelSerializer):
         user_detail = {
             'username': validated_data[USERNAME],
             'password': make_password(validated_data[PASSWORD]),
+            'mobile_number': validated_data[MOBILE_NUMBER],
             'is_staff': validated_data[IS_STAFF],
             'is_superuser': validated_data[IS_SUPERUSER]
         }
@@ -72,15 +73,16 @@ class HotelRoomTypeSerializer(serializers.ModelSerializer):
 
 class HotelReservation(serializers.ModelSerializer):
     """hotel reservation """
-    user = UserSerializer
+    username = serializers.PrimaryKeyRelatedField(read_only=True)
     room = HotelRoomTypeSerializer
     hotel = HotelSerializer
 
     class Meta:
         model = Reservation
-        fields = [USERNAME, ROOM, NO_OF_GUESTS, HOTEL, CHECK_IN,
-                  CHECK_OUT_DONE, CHECK_OUT, PAYMENT_TYPE, PAYMENT_DATE,
-                  CHARGE]
+        fields = [USERNAME, HOTEL, NO_OF_GUESTS, ROOM, CHECK_IN,
+                  CHECK_OUT_DONE, CHECK_OUT, PAYMENT_TYPE, PAYMENT_DATE]
+
+        read_only_fields = [USERNAME, CHARGE]
 
         extra_kwargs = {
             'username': {REQUIRED: True},
@@ -89,3 +91,25 @@ class HotelReservation(serializers.ModelSerializer):
             'hotel': {REQUIRED: True},
             'check_in': {REQUIRED: True},
         }
+
+    def create(self, validated_data):
+        validated_data['username'] = self.context['request'].user
+        Reservation.objects.create(**validated_data)
+        return validated_data
+
+
+    # def create(self, validated_data):
+    #     current_user = {
+    #         'username': self.context['request'].user,
+    #         'no_of_guests': validated_data['no_of_guests'],
+    #         'hotel': validated_data['hotel'],
+    #         'room': validated_data['room'],
+    #         'check_in': validated_data['check_in'],
+    #         'check_out': validated_data['check_out'],
+    #         'payment_type': validated_data['payment_type'],
+    #     }
+    #     Reservation.objects.create(**current_user)
+    #     return validated_data
+
+    def get_charge(self, obj):
+        return obj.get_charge()

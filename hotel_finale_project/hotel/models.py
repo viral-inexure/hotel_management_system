@@ -1,6 +1,4 @@
 import datetime
-from django.dispatch import receiver
-from django.db.models.signals import post_save
 from django.db import models
 from django.contrib.auth.models import AbstractUser, User
 from constants import (
@@ -13,7 +11,7 @@ from constants import (
 
 class Profile(AbstractUser):
     """ User detail or registration data table"""
-    mobile_number = models.IntegerField(default=123)
+    mobile_number = models.IntegerField()
     address = models.CharField(max_length=250)
     email = models.EmailField(max_length=150)
 
@@ -48,7 +46,7 @@ class HotelRoomType(models.Model):
     room_type = models.CharField(max_length=100, choices=ROOMS_TYPE)
     rate = models.FloatField()
     is_available = models.BooleanField(default=True)
-    person_cap = models.IntegerField(default=1)
+    person_cap = models.IntegerField()
 
     class Meta:
         unique_together = (HOTEL, ROOM_NO)
@@ -68,17 +66,18 @@ class Reservation(models.Model):
     room = models.ForeignKey(HotelRoomType, on_delete=models.CASCADE)
     username = models.ForeignKey(Profile, on_delete=models.CASCADE)
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
-    check_in = models.DateTimeField(auto_now_add=True)
-    check_out = models.DateTimeField(default=datetime.datetime.now() + datetime.timedelta(days=1))
+    check_in = models.DateTimeField()
+    check_out = models.DateTimeField()
     check_out_done = models.BooleanField(default=False)
     payment_type = models.CharField(max_length=100, choices=PAYMENT_METHOD)
-    no_of_guests = models.IntegerField(default=1)
+    no_of_guests = models.IntegerField()
     payment_date = models.DateTimeField(auto_now_add=True)
+    charge = models.CharField(max_length=100)
 
     def __str__(self):
         return self.username.username
 
-    def charge(self):
+    def get_charge(self):
         if self.check_out_done:
             if self.check_in == self.check_out:
                 return self.room.rate
@@ -90,16 +89,3 @@ class Reservation(models.Model):
         else:
             return 'payment count is pending'
 
-
-@receiver(post_save, sender=Reservation)
-def Room_available(sender, instance, created, **kwargs):
-    """signal for room is available or not"""
-    room = instance.room
-    if created:
-        room.is_available = False
-    room.save()
-
-    if instance.check_out_done:
-        room.is_available = True
-
-    room.save()
