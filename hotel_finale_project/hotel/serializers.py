@@ -15,9 +15,13 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = [USERNAME, MOBILE_NUMBER, ADDRESS, EMAIL,
-                  PASSWORD, IS_SUPERUSER, IS_STAFF
-                  ]
+        # fields = [USERNAME, MOBILE_NUMBER, ADDRESS, EMAIL,
+        #           PASSWORD, IS_SUPERUSER, IS_STAFF
+        #           ]
+        exclude = ['password', 'last_login', 'first_name',
+                   'last_name', 'is_active', 'date_joined',
+                   'user_permissions', 'groups']
+
         extra_kwargs = {
             USERNAME: {REQUIRED: True},
             MOBILE_NUMBER: {REQUIRED: True},
@@ -80,9 +84,9 @@ class HotelReservation(serializers.ModelSerializer):
     class Meta:
         model = Reservation
         fields = [USERNAME, HOTEL, NO_OF_GUESTS, ROOM, CHECK_IN,
-                  CHECK_OUT_DONE, CHECK_OUT, PAYMENT_TYPE, PAYMENT_DATE]
+                  CHECK_OUT_DONE, CHECK_OUT, PAYMENT_TYPE, CHARGE]
 
-        read_only_fields = [USERNAME, CHARGE]
+        read_only_fields = [USERNAME]
 
         extra_kwargs = {
             'username': {REQUIRED: True},
@@ -96,20 +100,3 @@ class HotelReservation(serializers.ModelSerializer):
         validated_data['username'] = self.context['request'].user
         Reservation.objects.create(**validated_data)
         return validated_data
-
-
-    # def create(self, validated_data):
-    #     current_user = {
-    #         'username': self.context['request'].user,
-    #         'no_of_guests': validated_data['no_of_guests'],
-    #         'hotel': validated_data['hotel'],
-    #         'room': validated_data['room'],
-    #         'check_in': validated_data['check_in'],
-    #         'check_out': validated_data['check_out'],
-    #         'payment_type': validated_data['payment_type'],
-    #     }
-    #     Reservation.objects.create(**current_user)
-    #     return validated_data
-
-    def get_charge(self, obj):
-        return obj.get_charge()

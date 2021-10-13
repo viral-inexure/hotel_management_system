@@ -1,6 +1,6 @@
 import datetime
 from django.db import models
-from django.contrib.auth.models import AbstractUser, User
+from django.contrib.auth.models import AbstractUser
 from constants import (
     SINGLE, HALL, KING,
     QUEEN, DOUBLE, HOTEL, ROOM_NO, CASH, CREDIT_DEBIT_CARD, CHECK, NET_BANKING
@@ -35,11 +35,11 @@ class Hotel(models.Model):
 class HotelRoomType(models.Model):
     """hotel room type data table """
     ROOMS_TYPE = (
-        (1, SINGLE),
-        (2, DOUBLE),
-        (3, KING),
-        (4, QUEEN),
-        (5, HALL)
+        (SINGLE, 1),
+        (DOUBLE, 2),
+        (KING, 3),
+        (QUEEN, 4),
+        (HALL, 5)
     )
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
     room_no = models.IntegerField(null=True, blank=True)
@@ -58,10 +58,10 @@ class HotelRoomType(models.Model):
 class Reservation(models.Model):
     """user reservation table"""
     PAYMENT_METHOD = (
-        (1, CASH),
-        (2, NET_BANKING),
-        (3, CHECK),
-        (4, CREDIT_DEBIT_CARD)
+        (CASH, 1),
+        (NET_BANKING, 2),
+        (CHECK, 3),
+        (CREDIT_DEBIT_CARD, 4)
     )
     room = models.ForeignKey(HotelRoomType, on_delete=models.CASCADE)
     username = models.ForeignKey(Profile, on_delete=models.CASCADE)
@@ -71,13 +71,12 @@ class Reservation(models.Model):
     check_out_done = models.BooleanField(default=False)
     payment_type = models.CharField(max_length=100, choices=PAYMENT_METHOD)
     no_of_guests = models.IntegerField()
-    payment_date = models.DateTimeField(auto_now_add=True)
-    charge = models.CharField(max_length=100)
+    reservation_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.username.username
 
-    def get_charge(self):
+    def charge(self):
         if self.check_out_done:
             if self.check_in == self.check_out:
                 return self.room.rate
@@ -88,4 +87,3 @@ class Reservation(models.Model):
                 return abs(total_cost)
         else:
             return 'payment count is pending'
-
