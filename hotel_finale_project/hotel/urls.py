@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework import routers
-from .views import UserView, HotelView, HotelRoomsTypeAvailable, ReservationHotel, UserBillCheck
+from .views import UserView, HotelView, HotelRoomsTypeAvailable, ReservationHotel, UserBillCheck, RegisterView
 
 app_name = 'hotel'
 router = routers.DefaultRouter()
@@ -12,7 +12,8 @@ router.register('hotel_reservation', ReservationHotel, basename='hotel_reservati
 urlpatterns = [
     path('', include(router.urls)),
     path('api-auth/', include('rest_auth.urls')),
-    path('UserBillCheck/', UserBillCheck.as_view(), name='Practice'),
+    path('register/', RegisterView.as_view(), name='auth_register'),
+    path('UserBillCheck/', UserBillCheck.as_view(), name='user_bill_check'),
     # 'http://127.0.0.1:8000/practice/?reservation=4&start_date=2021-10-12&end_date=2021-10-15'
 
 ]

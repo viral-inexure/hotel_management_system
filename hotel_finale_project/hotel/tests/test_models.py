@@ -53,6 +53,5 @@ class TestModel(TestCase):
             check_out_done=True,
             payment_type=1,
             no_of_guests=2,
-            payment_date=datetime.now()
         )
         self.assertEqual(str(reservation), self.user.username)

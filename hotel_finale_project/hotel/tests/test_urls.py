@@ -1,3 +1,4 @@
+from django.urls import reverse
 from rest_framework.test import APITestCase, APIClient
 
 
@@ -28,5 +29,10 @@ class TestUrls(APITestCase):
 
     def test_urls_of_hotel_reservation(self):
         url = '/hotel_reservation'
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 301)
+
+    def test_check_user_amount_url(self):
+        url = '/UserBillCheck'
         response = self.client.get(url)
         self.assertEqual(response.status_code, 301)

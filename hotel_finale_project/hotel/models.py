@@ -1,4 +1,3 @@
-import datetime
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from constants import (
@@ -6,8 +5,6 @@ from constants import (
     QUEEN, DOUBLE, HOTEL, ROOM_NO, CASH, CREDIT_DEBIT_CARD, CHECK, NET_BANKING
 )
 
-
-# Create your models here.
 
 class Profile(AbstractUser):
     """ User detail or registration data table"""
